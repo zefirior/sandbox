@@ -1,12 +1,16 @@
 from interpreter import Interpreter
 
-def main():
-    # while True:
-    it = Interpreter('3+6')
-    print(it.expr())
-    it = Interpreter('3+4')
-    print(it.expr())
 
+def main():
+    while True:
+        text = input('input >>> ')
+
+        if text:
+            it = Interpreter(text)
+            it.expr()
+            print(it.tokens)
+        else:
+            break
 
 if __name__ == '__main__':
     main()

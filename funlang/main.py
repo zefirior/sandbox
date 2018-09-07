@@ -7,8 +7,7 @@ def main():
 
         if text:
             it = Interpreter(text)
-            it.expr()
-            print(it.tokens)
+            print(it.expr())
         else:
             break
 

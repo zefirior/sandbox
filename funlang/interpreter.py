@@ -1,4 +1,5 @@
-from token import TokenInt, TokenMinus, TokenPlus, TokenEOF, EOF
+from token import TokenInt, TokenMinus, TokenPlus, TokenEOF, EOF, PLUS, MINUS
+
 
 class Interpreter:
 
@@ -9,7 +10,8 @@ class Interpreter:
         self.current_token = None
         self.token_type = [TokenInt, TokenMinus, TokenPlus, TokenEOF]
 
-    def error(self):
+    @staticmethod
+    def error():
         raise Exception('Что-то не так')
 
     def try_next_char(self):
@@ -19,6 +21,14 @@ class Interpreter:
             return self.text[self.pos + 1]
 
     def get_next_token(self):
+
+        while True:
+            next_char = self.try_next_char()
+            if next_char == ' ':
+                self.pos += 1
+            else:
+                break
+
         next_char = self.try_next_char()
         token = None
 
@@ -47,6 +57,7 @@ class Interpreter:
                 else:
                     break
 
+        token.prepare_value()
         self.tokens.append(token)
 
         return token
@@ -58,4 +69,29 @@ class Interpreter:
             if token.type == EOF:
                 break
 
-        
+        iter_token = iter(self.tokens)
+        result = next(iter_token, None)
+
+        if result.type == EOF:
+            return 0
+
+        result = result.value
+
+        while True:
+            op = next(iter_token, None)
+
+            if op.type == EOF:
+                return result
+
+            value = next(iter_token, None)
+
+            if value.type == EOF:
+                self.error()
+
+            value = value.value
+
+            if op.type == PLUS:
+                result += value
+            elif op.type == MINUS:
+                result -= value
+

@@ -1,4 +1,7 @@
-from token import TokenInt, TokenMinus, TokenPlus, TokenEOF, EOF, PLUS, MINUS
+from tokens import (
+    TokenInt, TokenMinus, TokenPlus, TokenStar, TokenDivision, TokenEOF,
+    EOF, PLUS, MINUS, STAR, DIVISION
+)
 
 
 class Interpreter:
@@ -8,7 +11,7 @@ class Interpreter:
         self.pos = -1
         self.tokens = []
         self.current_token = None
-        self.token_type = [TokenInt, TokenMinus, TokenPlus, TokenEOF]
+        self.token_type = [TokenInt, TokenMinus, TokenPlus, TokenStar, TokenDivision, TokenEOF]
 
     @staticmethod
     def error():
@@ -39,6 +42,7 @@ class Interpreter:
             for token_class in self.token_type:
                 if token_class.validate_first_char(next_char):
                     token = token_class(next_char)
+                    break
 
             if token is None:
                 print(next_char)
@@ -94,4 +98,8 @@ class Interpreter:
                 result += value
             elif op.type == MINUS:
                 result -= value
+            elif op.type == STAR:
+                result *= value
+            elif op.type == DIVISION:
+                result /= value
 

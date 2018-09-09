@@ -1,6 +1,8 @@
 INTEGER = 'INTEGER'
 PLUS = 'PLUS'
 MINUS = 'MINUS'
+STAR = 'STAR'
+DIVISION = 'DIVISION'
 EOF = 'EOF'
 
 
@@ -13,6 +15,8 @@ class Token:
         INTEGER,
         PLUS,
         MINUS,
+        STAR,
+        DIVISION,
         EOF,
     }
 
@@ -67,38 +71,47 @@ class TokenInt(Token):
             return False
 
 
-class TokenPlus(Token):
+class TokenOp(Token):
+    expect_char = None
+
+    @classmethod
+    def validate_first_char(cls, char):
+        if char in cls.expect_char:
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def validate_char(char):
+        return False
+
+
+class TokenPlus(TokenOp):
+    expect_char = '+'
 
     def __init__(self, value):
         super().__init__(PLUS, value)
 
-    @staticmethod
-    def validate_first_char(char):
-        if char in '+':
-            return True
-        else:
-            return False
 
-    @staticmethod
-    def validate_char(char):
-        return False
-
-
-class TokenMinus(Token):
+class TokenMinus(TokenOp):
+    expect_char = '-'
 
     def __init__(self, value):
         super().__init__(MINUS, value)
 
-    @staticmethod
-    def validate_first_char(char):
-        if char in '-':
-            return True
-        else:
-            return False
 
-    @staticmethod
-    def validate_char(char):
-        return False
+class TokenStar(TokenOp):
+    expect_char = '*'
+
+    def __init__(self, value):
+        super().__init__(STAR, value)
+
+
+class TokenDivision(TokenOp):
+    expect_char = '/'
+
+    def __init__(self, value):
+        super().__init__(DIVISION, value)
 
 
 class TokenEOF(Token):

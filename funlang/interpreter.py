@@ -1,105 +1,58 @@
-from tokens import (
-    TokenInt, TokenMinus, TokenPlus, TokenStar, TokenDivision, TokenEOF,
-    EOF, PLUS, MINUS, STAR, DIVISION
+from utils import error
+from lexer import (
+    Lexer, EOF, PLUS, MINUS, STAR, DIVISION, INTEGER, LPAREN, RPAREN
 )
 
 
 class Interpreter:
 
-    def __init__(self, text):
-        self.text = text
-        self.pos = -1
-        self.tokens = []
-        self.current_token = None
-        self.token_type = [TokenInt, TokenMinus, TokenPlus, TokenStar, TokenDivision, TokenEOF]
+    def __init__(self, lexer):
+        self.lexer = lexer
 
-    @staticmethod
-    def error():
-        raise Exception('Что-то не так')
-
-    def try_next_char(self):
-        if self.pos + 2 > len(self.text):
-            return None
+    def check_token(self, type_):
+        token = self.lexer.get_next_token()
+        if token.type != type_:
+            error()
         else:
-            return self.text[self.pos + 1]
+            return token
 
-    def get_next_token(self):
+    def factor(self):
+        if self.lexer.next_token.type == INTEGER:
+            return self.lexer.get_next_token().value
+        elif self.lexer.next_token.type == LPAREN:
+            self.lexer.get_next_token()
+            result = self.expr()
+            self.check_token(RPAREN)
+            return result
+        error(self.lexer.next_token)
+
+    def term(self):
+        result = self.factor()
 
         while True:
-            next_char = self.try_next_char()
-            if next_char == ' ':
-                self.pos += 1
+            if self.lexer.next_token.type == STAR:
+                self.lexer.get_next_token()
+                result *= self.factor()
+            elif self.lexer.next_token.type == DIVISION:
+                self.lexer.get_next_token()
+                result //= self.factor()
             else:
                 break
 
-        next_char = self.try_next_char()
-        token = None
-
-        if next_char is None:
-            token = TokenEOF(None)
-        else:
-
-            for token_class in self.token_type:
-                if token_class.validate_first_char(next_char):
-                    token = token_class(next_char)
-                    break
-
-            if token is None:
-                print(next_char)
-                self.error()
-
-            self.pos += 1
-
-            while True:
-                char = self.try_next_char()
-                if char is None:
-                    break
-
-                if token.validate_char(char):
-                    self.pos += 1
-                    token.add_char(char)
-                else:
-                    break
-
-        token.prepare_value()
-        self.tokens.append(token)
-
-        return token
+        return result
 
     def expr(self):
 
+        result = self.term()
+
         while True:
-            token = self.get_next_token()
-            if token.type == EOF:
+            if self.lexer.next_token.type == MINUS:
+                self.lexer.get_next_token()
+                result -= self.term()
+            elif self.lexer.next_token.type == PLUS:
+                self.lexer.get_next_token()
+                result += self.term()
+            else:
                 break
 
-        iter_token = iter(self.tokens)
-        result = next(iter_token, None)
-
-        if result.type == EOF:
-            return 0
-
-        result = result.value
-
-        while True:
-            op = next(iter_token, None)
-
-            if op.type == EOF:
-                return result
-
-            value = next(iter_token, None)
-
-            if value.type == EOF:
-                self.error()
-
-            value = value.value
-
-            if op.type == PLUS:
-                result += value
-            elif op.type == MINUS:
-                result -= value
-            elif op.type == STAR:
-                result *= value
-            elif op.type == DIVISION:
-                result /= value
-
+        return result

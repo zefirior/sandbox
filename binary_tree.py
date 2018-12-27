@@ -105,9 +105,9 @@ class TreeNode:
     def find(self, key):
         if key == self.key:
             return self
-        if key < self.key and self._left is not None:
+        elif key < self.key and self._left is not None:
             return self._left.find(key)
-        if key > self.key and self._right is not None:
+        elif key > self.key and self._right is not None:
             return self._right.find(key)
 
     def _right_small_swap(self):

@@ -1,0 +1,29 @@
+name: "\u041C\u043E\u0434\u0443\u043B\u044C \u043E\u0441\u043D\u043E\u0432\u043D\u043E\
+  \u0433\u043E \u0440\u0430\u0441\u0447\u0435\u0442\u0430"
+stages:
+- name: prepare
+  processes:
+  - branch: master
+    executable_path: woodpecker/prepare.py
+    name: prepare
+    repository_url: gitlab@gitlab.rc-online.ru:general/woodpecker.git
+    tags: [adev5]
+- name: ext_calc
+  processes:
+  - branch: stable
+    executable_path: bunny/caprep.py
+    name: caprep
+    repository_url: gitlab@gitlab.rc-online.ru:general/bunny.git
+    tags: [715-extbill]
+  - branch: stable
+    executable_path: bunny/alg_tko.py
+    name: alg_tko
+    repository_url: gitlab@gitlab.rc-online.ru:general/bunny.git
+    tags: [715-extbill]
+- name: final
+  processes:
+  - branch: master
+    executable_path: woodpecker/final.py
+    name: final
+    repository_url: gitlab@gitlab.rc-online.ru:general/woodpecker.git
+    tags: [adev5]

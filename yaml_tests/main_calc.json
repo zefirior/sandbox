@@ -1,0 +1,48 @@
+{
+  "name": "Модуль основного расчета",
+  "stages": [
+    {
+      "name": "prepare",
+      "processes": [
+        {
+          "name": "prepare",
+          "branch": "master",
+          "repository_url": "gitlab@gitlab.rc-online.ru:general/woodpecker.git",
+          "executable_path": "woodpecker/prepare.py",
+          "tags": ["adev5"]
+        }
+      ]
+    },
+    {
+      "name": "ext_calc",
+      "processes": [
+        {
+          "name": "caprep",
+          "branch": "stable",
+          "repository_url": "gitlab@gitlab.rc-online.ru:general/bunny.git",
+          "executable_path": "bunny/caprep.py",
+          "tags": ["715-extbill"]
+        },
+        {
+          "name": "alg_tko",
+          "branch": "stable",
+          "repository_url": "gitlab@gitlab.rc-online.ru:general/bunny.git",
+          "executable_path": "bunny/alg_tko.py",
+          "tags": ["715-extbill"]
+        }
+      ]
+    },
+    {
+      "name": "final",
+      "processes": [
+        {
+          "name": "final",
+          "branch": "master",
+          "repository_url": "gitlab@gitlab.rc-online.ru:general/woodpecker.git",
+          "executable_path": "woodpecker/final.py",
+          "tags": ["adev5"]
+        }
+      ]
+    }
+  ]
+}
